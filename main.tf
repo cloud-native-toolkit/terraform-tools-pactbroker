@@ -9,8 +9,8 @@ provider "helm" {
 locals {
   tmp_dir       = "${path.cwd}/.tmp"
   chart         = "${path.module}/charts/pact-broker"
-  ingress_host  = "pact-${var.releases_namespace}.${var.cluster_ingress_hostname}"
-  ingress_url   = "http://${local.ingress_host}"
+  ingress_host  = "pact-broker-${var.releases_namespace}.${var.cluster_ingress_hostname}"
+  ingress_url   = "https://${local.ingress_host}"
   database_type = "sqlite"
   database_name = "pactbroker.sqlite"
   secret_name   = "pactbroker-access"
@@ -60,8 +60,20 @@ resource "helm_release" "pactbroker" {
   }
 }
 
+resource "null_resource" "delete-consolelink" {
+  count = var.cluster_type != "kubernetes" ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "kubectl delete consolelink -l grouping=garage-cloud-native-toolkit -l app=pactbroker || exit 0"
+
+    environment = {
+      KUBECONFIG = var.cluster_config_file
+    }
+  }
+}
+
 resource "helm_release" "pactbroker-config" {
-  depends_on = [helm_release.pactbroker]
+  depends_on = [helm_release.pactbroker, null_resource.delete-consolelink]
 
   name         = "pactbroker-config"
   repository   = "https://ibm-garage-cloud.github.io/toolkit-charts/"
@@ -77,5 +89,20 @@ resource "helm_release" "pactbroker-config" {
   set {
     name  = "url"
     value = local.ingress_url
+  }
+
+  set {
+    name  = "applicationMenu"
+    value = var.cluster_type != "kubernetes"
+  }
+
+  set {
+    name  = "ingressSubdomain"
+    value = var.cluster_ingress_hostname
+  }
+
+  set {
+    name  = "displayName"
+    value = "Pact Broker"
   }
 }

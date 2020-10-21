@@ -11,6 +11,7 @@ locals {
   chart         = "${path.module}/charts/pact-broker"
   ingress_host  = "pact-broker-${var.releases_namespace}.${var.cluster_ingress_hostname}"
   ingress_url   = "https://${local.ingress_host}"
+  service_url  = "http://pact-broker.${var.releases_namespace}"
   database_type = "sqlite"
   database_name = "pactbroker.sqlite"
   secret_name   = "pactbroker-access"
@@ -89,6 +90,11 @@ resource "helm_release" "pactbroker-config" {
   set {
     name  = "url"
     value = local.ingress_url
+  }
+
+  set {
+    name  = "privateUrl"
+    value = local.service_url
   }
 
   set {

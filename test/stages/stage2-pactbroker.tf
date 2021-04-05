@@ -1,5 +1,5 @@
 module "dev_tools_pactbroker" {
-  source = "github.com/ibm-garage-cloud/terraform-tools-pactbroker.git"
+  source = "./module"
 
   cluster_config_file                           = module.dev_cluster.config_file_path
   cluster_type                                  = module.dev_cluster.platform.type_code

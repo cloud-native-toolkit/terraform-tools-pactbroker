@@ -23,3 +23,9 @@ variable "tls_secret_name" {
   description = "The secret containing the tls certificates"
   default = ""
 }
+
+variable "toolkit_namespace" {
+  type        = string
+  description = "Namespace where the toolkit config jobs run."
+  default     = ""
+}

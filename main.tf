@@ -3,20 +3,27 @@ locals {
   tmp_dir       = "${path.cwd}/.tmp"
   chart         = "${path.module}/charts/pact-broker"
   ingress_host  = "pact-broker-${var.releases_namespace}.${var.cluster_ingress_hostname}"
-  ingress_url   = "https://${local.ingress_host}"
   service_url  = "http://pact-broker.${var.releases_namespace}"
   database_type = "sqlite"
   database_name = "pactbroker.sqlite"
-  secret_name   = "pactbroker-access"
-  config_name   = "pactbroker-config"
   cluster_type  = var.cluster_type == "kubernetes" ? "kubernetes" : "openshift"
 }
 
+resource null_resource print_toolkit_namespace {
+  provisioner "local-exec" {
+    command = "echo 'Toolkit namespace: ${var.toolkit_namespace}'"
+  }
+}
+
 resource "helm_release" "pactbroker" {
-  chart     = local.chart
-  name      = "pact-broker"
-  namespace = var.releases_namespace
+  depends_on = [null_resource.print_toolkit_namespace]
+
+  chart      = "pact-broker"
+  name       = "pact-broker"
+  namespace  = var.releases_namespace
   disable_openapi_validation = true
+  repository = "https://charts.cloudnativetoolkit.dev"
+  version    = "0.2.1"
 
   set {
     name  = "ingress.enabled"
@@ -70,7 +77,7 @@ resource "helm_release" "pactbroker-config" {
   depends_on = [helm_release.pactbroker, null_resource.delete-consolelink]
 
   name         = "pactbroker-config"
-  repository   = "https://ibm-garage-cloud.github.io/toolkit-charts/"
+  repository   = "https://charts.cloudnativetoolkit.dev"
   chart        = "tool-config"
   namespace    = var.releases_namespace
   force_update = true
@@ -81,27 +88,12 @@ resource "helm_release" "pactbroker-config" {
   }
 
   set {
-    name  = "url"
-    value = local.ingress_url
-  }
-
-  set {
     name  = "privateUrl"
     value = local.service_url
   }
 
   set {
     name  = "applicationMenu"
-    value = var.cluster_type == "ocp4"
-  }
-
-  set {
-    name  = "ingressSubdomain"
-    value = var.cluster_ingress_hostname
-  }
-
-  set {
-    name  = "displayName"
-    value = "Pact Broker"
+    value = false
   }
 }

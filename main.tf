@@ -76,7 +76,7 @@ resource null_resource pactbroker_helm {
   triggers = {
     namespace = var.releases_namespace
     name = "pact-broker"
-    chart = "pact-broker"
+    chart = "toolkit-charts/pact-broker"
     ingress_host = local.ingress_host
     ingress_enabled = var.cluster_type == "kubernetes" ? "true" : "false"
     route_enabbled = var.cluster_type == "kubernetes" ? "false" : "true"

@@ -80,6 +80,10 @@ kubectl apply -n ${NAMESPACE} -f ${OUTPUT_YAML} --validate=false
 
 if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
   sleep 5
+
+oc get route pact-broker -n "${NAMESPACE}" 
+
+
   PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath='{ .spec.host }')
 
   URL="https://${PACTBROKER_HOST}"

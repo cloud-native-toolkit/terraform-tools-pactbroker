@@ -69,6 +69,8 @@ else
   VALUES="ingress.enabled=false,route.enabled=true"
 fi
 
+${HELM} repo add toolkit-charts "https://charts.cloudnativetoolkit.dev"
+
 echo "*** Generating kube yaml from helm template into ${OUTPUT_YAML}"
 ${HELM} template ${NAME} "${CHART}" \
     --namespace "${NAMESPACE}" \
@@ -95,7 +97,7 @@ else
 fi
 
 
-${HELM} repo add toolkit-charts "https://charts.cloudnativetoolkit.dev"
+
 ${HELM} template pactbroker-config toolkit-charts/tool-config \
   --namespace "${NAMESPACE}" \
   --set name=pactbroker \

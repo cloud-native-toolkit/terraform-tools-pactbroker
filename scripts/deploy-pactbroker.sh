@@ -70,6 +70,7 @@ else
 fi
 
 ${HELM} repo add toolkit-charts "https://charts.cloudnativetoolkit.dev"
+${HELM}  repo update
 
 echo "*** Generating kube yaml from helm template into ${OUTPUT_YAML}"
 ${HELM} template ${NAME} "${CHART}" \

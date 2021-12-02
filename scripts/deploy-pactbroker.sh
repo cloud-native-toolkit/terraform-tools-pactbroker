@@ -75,11 +75,6 @@ ${HELM} template ${NAME} "${CHART}" \
     --set database.type="${DATABASE_TYPE}" \
     --set database.name="${DATABASE_NAME}" > ${OUTPUT_YAML}
 
-echo "*** DEBUGGING ***"
-cat ${OUTPUT_YAML}
-exit 1
-echo "*** END DEBUGGING ***"
-
 echo "*** Applying kube yaml ${OUTPUT_YAML}"
 kubectl apply -n ${NAMESPACE} -f ${OUTPUT_YAML} --validate=false
 

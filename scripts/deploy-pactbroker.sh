@@ -83,12 +83,10 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   sleep 5
 
 echo "*** DEBUGGING ***"
-oc get route pact-broker -n "${NAMESPACE}" -o=json
-ROUTE=$(oc get route pact-broker -n "${NAMESPACE}" -o=json)
-echo ROUTE
+oc get route pact-broker -n "${NAMESPACE}" -o=json | $JQ ".spec.host" -r
 
 echo "using jq..."
-PACTBROKER_HOST=$(echo ROUTE | $JQ ".spec.host" -r)
+PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=json | $JQ ".spec.host" -r)
 echo "*** END DEBUGGING ***"
 
   #PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")

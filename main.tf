@@ -144,7 +144,7 @@ resource null_resource pactbroker_helm {
   provisioner "local-exec" {
     when = destroy
 
-    command = "${path.module}/scripts/destroy-pactbroker.sh ${self.triggers.namespace} ${self.triggers.name} ${self.triggers.chart}"
+    command = "${path.module}/scripts/destroy-pactbroker.sh ${self.triggers.chart} ${self.triggers.namespace} ${self.triggers.ingress_host} ${self.triggers.database_type} ${self.triggers.database_name} ${self.triggers.tls_secret_name} ${self.triggers.ingress_enabled} ${self.triggers.route_enabbled} ${self.triggers.cluster_type}"
 
     environment = {
       KUBECONFIG = self.triggers.kubeconfig

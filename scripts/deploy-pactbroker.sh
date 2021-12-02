@@ -30,6 +30,7 @@ if [[ -z "${BIN_DIR}" ]]; then
 fi
 
 HELM=$(command -v helm || command -v "${BIN_DIR}/helm")
+JQ=$(command -v jq || command -v "${BIN_DIR}/jq")
 
 if [[ -z "${HELM}" ]]; then
   curl -sLo helmx.tar.gz https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
@@ -75,22 +76,13 @@ ${HELM} template ${NAME} "${CHART}" \
     --set database.type="${DATABASE_TYPE}" \
     --set database.name="${DATABASE_NAME}" > ${OUTPUT_YAML}
 
-echo "*** DEBUGGING ***"
-cat ${OUTPUT_YAML}
-exit 1
-echo "*** END DEBUGGING ***"
-
 echo "*** Applying kube yaml ${OUTPUT_YAML}"
 kubectl apply -n ${NAMESPACE} -f ${OUTPUT_YAML} --validate=false
 
 if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
   sleep 5
 
-echo "*** DEBUGGING ***"
-oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}"
-echo "*** END DEBUGGING ***"
-
-  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")
+  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=json | $JQ ".spec.host" -r)
 
   URL="https://${PACTBROKER_HOST}"
 else

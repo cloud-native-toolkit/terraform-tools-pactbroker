@@ -75,6 +75,11 @@ ${HELM} template ${NAME} "${CHART}" \
     --set database.type="${DATABASE_TYPE}" \
     --set database.name="${DATABASE_NAME}" > ${OUTPUT_YAML}
 
+echo "*** DEBUGGING ***"
+cat ${OUTPUT_YAML}
+exit 1
+echo "*** END DEBUGGING ***"
+
 echo "*** Applying kube yaml ${OUTPUT_YAML}"
 kubectl apply -n ${NAMESPACE} -f ${OUTPUT_YAML} --validate=false
 
@@ -82,9 +87,7 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   sleep 5
 
 echo "*** DEBUGGING ***"
-oc get route pact-broker -n "${NAMESPACE}" -o=json
 oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}"
-
 echo "*** END DEBUGGING ***"
 
   PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")

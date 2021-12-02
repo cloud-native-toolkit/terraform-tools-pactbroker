@@ -86,6 +86,7 @@ resource null_resource pactbroker_helm {
     kubeconfig = var.cluster_config_file
     tmp_dir = local.tmp_dir
     bin_dir = local.bin_dir
+    cluster_type = var.cluster_type
   }
 
   provisioner "local-exec" {

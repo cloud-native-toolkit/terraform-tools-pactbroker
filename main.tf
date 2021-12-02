@@ -95,6 +95,7 @@ resource null_resource pactbroker_helm {
       KUBECONFIG = self.triggers.kubeconfig
       TMP_DIR = self.triggers.tmp_dir
       BIN_DIR = self.triggers.bin_dir
+      CLUSTER_TYPE = self.triggers.cluster_type
     }
   }
 
@@ -107,6 +108,7 @@ resource null_resource pactbroker_helm {
       KUBECONFIG = self.triggers.kubeconfig
       TMP_DIR = self.triggers.tmp_dir
       BIN_DIR = self.triggers.bin_dir
+      CLUSTER_TYPE = self.triggers.cluster_type
     }
   }
 }

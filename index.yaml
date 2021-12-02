@@ -71,6 +71,70 @@ versions:
         description: Namespace where the toolkit config jobs run.
         default: ""
         optional: true
+    version: v1.5.3
+  - platforms:
+      - kubernetes
+      - ocp3
+      - ocp4
+    dependencies:
+      - id: cluster
+        refs:
+          - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
+            version: ">= 1.7.0"
+          - source: github.com/ibm-garage-cloud/terraform-ibm-ocp-vpc
+            version: ">= 1.0.0"
+          - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
+            version: ">= 2.0.0"
+      - id: namespace
+        refs:
+          - source: github.com/ibm-garage-cloud/terraform-k8s-namespace
+            version: ">= 2.1.0"
+      - id: console_link_job
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-k8s-console-link-job
+            version: ">= 1.0.0"
+    variables:
+      - name: cluster_type
+        moduleRef:
+          id: cluster
+          output: platform.type_code
+        type: string
+        description: The cluster type (openshift or ocp3 or ocp4 or kubernetes)
+      - name: cluster_ingress_hostname
+        moduleRef:
+          id: cluster
+          output: platform.ingress
+        type: string
+        description: Ingress hostname of the cluster.
+      - name: cluster_config_file
+        moduleRef:
+          id: cluster
+          output: config_file_path
+        type: string
+        description: Cluster config file for Kubernetes cluster.
+      - name: tls_secret_name
+        moduleRef:
+          id: cluster
+          output: platform.tls_secret
+        type: string
+        description: The secret containing the tls certificates
+        default: ""
+        optional: true
+      - name: releases_namespace
+        moduleRef:
+          id: namespace
+          output: name
+          discriminator: tools
+        type: string
+        description: Name of the existing namespace where Pact Broker will be deployed.
+      - name: toolkit_namespace
+        moduleRef:
+          id: console_link_job
+          output: namespace
+        type: string
+        description: Namespace where the toolkit config jobs run.
+        default: ""
+        optional: true
     version: v1.5.2
   - platforms:
       - kubernetes

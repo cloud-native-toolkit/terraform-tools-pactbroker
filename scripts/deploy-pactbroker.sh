@@ -83,15 +83,15 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
 
 echo "*** DEBUGGING ***"
 oc get route pact-broker -n "${NAMESPACE}" -o=json
-oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{ .spec.host }"
+oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}"
 
 echo "*** END DEBUGGING ***"
 
-  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{ .spec.host }")
+  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")
 
   URL="https://${PACTBROKER_HOST}"
 else
-  PACTBROKER_HOST=$(kubectl get ingress/pact-broker -n "${NAMESPACE}" -o=jsonpath="{ .spec.rules[0].host }")
+  PACTBROKER_HOST=$(kubectl get ingress/pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.rules[0].host}")
 
   if [[ -n "${TLS_SECRET_NAME}" ]]; then
     URL="https://${PACTBROKER_HOST}"

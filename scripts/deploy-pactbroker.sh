@@ -80,11 +80,11 @@ kubectl apply -n ${NAMESPACE} -f ${OUTPUT_YAML} --validate=false
 
 if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] || [[ "${CLUSTER_TYPE}" == "ocp4" ]]; then
   sleep 5
-  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o jsonpath='{ .spec.host }')
+  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath='{ .spec.host }')
 
   URL="https://${PACTBROKER_HOST}"
 else
-  PACTBROKER_HOST=$(kubectl get ingress/pact-broker -n "${NAMESPACE}" -o jsonpath='{ .spec.rules[0].host }')
+  PACTBROKER_HOST=$(kubectl get ingress/pact-broker -n "${NAMESPACE}" -o=jsonpath='{ .spec.rules[0].host }')
 
   if [[ -n "${TLS_SECRET_NAME}" ]]; then
     URL="https://${PACTBROKER_HOST}"

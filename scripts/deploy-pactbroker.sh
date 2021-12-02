@@ -56,18 +56,13 @@ SECRET_OUTPUT_YAML="${TMP_DIR}/pactbroker-secret.yaml"
 
 mkdir -p ${TMP_DIR}
 
-if [[ "${CLUSTER_TYPE}" == "kubernetes" ]]; then
-  VALUES=ingress.hosts.0.host=${INGRESS_HOST}
-  VALUES="${VALUES},ingress.enabled=${INGRESS_ENABLED}"
-  VALUES="${VALUES},route.enabled=${ROUTE_ENABLED}"
-  if [[ -n "${TLS_SECRET_NAME}" ]]; then
-    VALUES="${VALUES},ingress.tls[0].secretName=${TLS_SECRET_NAME}"
-    VALUES="${VALUES},ingress.tls[0].hosts[0]=${INGRESS_HOST}"
-    VALUES="${VALUES},ingress.annotations.ingress\.bluemix\.net/redirect-to-https='True'"
-  fi
-else
-  VALUES="ingress.enabled=false,route.enabled=true"
-fi
+VALUES=ingress.hosts.0.host=${INGRESS_HOST}
+VALUES="${VALUES},ingress.enabled=${INGRESS_ENABLED}"
+VALUES="${VALUES},route.enabled=${ROUTE_ENABLED}"
+VALUES="${VALUES},ingress.tls[0].secretName=${TLS_SECRET_NAME}"
+VALUES="${VALUES},ingress.tls[0].hosts[0]=${INGRESS_HOST}"
+VALUES="${VALUES},ingress.annotations.ingress\.bluemix\.net/redirect-to-https='True'"
+
 
 ${HELM} repo add toolkit-charts "https://charts.cloudnativetoolkit.dev"
 ${HELM} repo update

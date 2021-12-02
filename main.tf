@@ -70,11 +70,11 @@ resource null_resource print_toolkit_namespace {
 
 
 
-resource null_resource cloud_setup_helm {
-  depends_on = [null_resource.delete-helm-cloud-config, null_resource.delete-consolelink]
+resource null_resource pactbroker_helm {
+  depends_on = [null_resource.delete-consolelink]
 
   triggers = {
-    namespace = var.namespace
+    namespace = var.releases_namespace
     name = "pact-broker"
     chart = "pact-broker"
     ingress_host = local.ingress_host

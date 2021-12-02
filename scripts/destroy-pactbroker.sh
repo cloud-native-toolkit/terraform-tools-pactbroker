@@ -14,21 +14,12 @@ if [[ -z "${BIN_DIR}" ]]; then
   BIN_DIR=$(cd ./bin; pwd -P)
 fi
 
-VALUES_FILE="${TMP_DIR}/${NAME}-values.yaml"
+HELM=$(command -v helm || command -v "${BIN_DIR}/helm")
 
-echo "${VALUES_FILE_CONTENT}" > "${VALUES_FILE}"
 
-HELM=$(command -v helm || command -v ./bin/helm)
 
-if [[ -z "${HELM}" ]]; then
-  curl -sLo helm.tar.gz https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
-  tar xzf helm.tar.gz
-  mkdir -p ./bin && mv ./linux-amd64/helm ./bin/helm
-  rm -rf linux-amd64
-  rm helm.tar.gz
-
-  HELM="$(cd ./bin; pwd -P)/helm"
-fi
+${HELM} repo add toolkit-charts "https://charts.cloudnativetoolkit.dev"
+${HELM} repo update
 
 kubectl config set-context --current --namespace "${NAMESPACE}"
 
@@ -36,4 +27,6 @@ if [[ -n "${REPO}" ]]; then
   repo_config="--repo ${REPO}"
 fi
 
-${HELM} template "${NAME}" "${CHART}" ${repo_config} --values "${VALUES_FILE}" | kubectl delete -f -
+#${HELM} template "${NAME}" "pactbroker-config" ${repo_config} --values "${VALUES_FILE}" | kubectl delete -f -
+
+#${HELM} template "${NAME}" "${CHART}" ${repo_config} --values "${VALUES_FILE}" | kubectl delete -f -

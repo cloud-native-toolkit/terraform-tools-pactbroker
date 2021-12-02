@@ -30,6 +30,7 @@ if [[ -z "${BIN_DIR}" ]]; then
 fi
 
 HELM=$(command -v helm || command -v "${BIN_DIR}/helm")
+JQ=$(command -v jq || command -v "${BIN_DIR}/jq")
 
 if [[ -z "${HELM}" ]]; then
   curl -sLo helmx.tar.gz https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
@@ -82,10 +83,11 @@ if [[ "${CLUSTER_TYPE}" == "openshift" ]] || [[ "${CLUSTER_TYPE}" == "ocp3" ]] |
   sleep 5
 
 echo "*** DEBUGGING ***"
-oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}"
+ROUTE="$(oc get route pact-broker -n "${NAMESPACE}" -o=json)"
+PACTBROKER_HOST=$(echo ROUTE | $JQ ".spec.host" -r)
 echo "*** END DEBUGGING ***"
 
-  PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")
+  #PACTBROKER_HOST=$(oc get route pact-broker -n "${NAMESPACE}" -o=jsonpath="{.spec.host}")
 
   URL="https://${PACTBROKER_HOST}"
 else

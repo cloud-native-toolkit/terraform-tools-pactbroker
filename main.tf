@@ -22,12 +22,6 @@ resource null_resource print_toolkit_namespace {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    config_path = var.cluster_config_file
-  }
-}
-
 resource "helm_release" "pactbroker" {
   depends_on = [null_resource.print_toolkit_namespace]
 

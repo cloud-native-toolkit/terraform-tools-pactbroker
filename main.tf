@@ -1,12 +1,19 @@
 
 locals {
   tmp_dir       = "${path.cwd}/.tmp"
+  bin_dir      = module.setup_clis.bin_dir
   chart         = "${path.module}/charts/pact-broker"
   ingress_host  = "pact-broker-${var.releases_namespace}.${var.cluster_ingress_hostname}"
   service_url  = "http://pact-broker.${var.releases_namespace}"
   database_type = "sqlite"
   database_name = "pactbroker.sqlite"
   cluster_type  = var.cluster_type == "kubernetes" ? "kubernetes" : "openshift"
+}
+
+module setup_clis {
+  source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
+
+  clis = ["helm"]
 }
 
 resource null_resource print_toolkit_namespace {
@@ -24,6 +31,7 @@ resource "helm_release" "pactbroker" {
   disable_openapi_validation = true
   repository = "https://charts.cloudnativetoolkit.dev"
   version    = "0.2.1"
+  
 
   set {
     name  = "ingress.enabled"
@@ -60,6 +68,8 @@ resource "helm_release" "pactbroker" {
     value = local.database_name
   }
 }
+
+
 
 resource "null_resource" "delete-consolelink" {
   count = var.cluster_type != "kubernetes" ? 1 : 0

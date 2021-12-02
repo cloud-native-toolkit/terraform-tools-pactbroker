@@ -1,13 +1,39 @@
 #!/usr/bin/env bash
 
 NAMESPACE="$1"
+NAME="$2"
+CHART="$3"
 
-if [[ -n "${KUBECONFIG_IKS}" ]]; then
-    export KUBECONFIG="${KUBECONFIG_IKS}"
+if [[ -z "${TMP_DIR}" ]]; then
+  TMP_DIR="./tmp"
+fi
+mkdir -p "${TMP_DIR}"
+
+if [[ -z "${BIN_DIR}" ]]; then
+  mkdir -p ./bin
+  BIN_DIR=$(cd ./bin; pwd -P)
 fi
 
-kubectl delete secret,deployment,ingress,service -n "${NAMESPACE}" -l app=pact-broker
+VALUES_FILE="${TMP_DIR}/${NAME}-values.yaml"
 
-if kubectl get route -n "${NAMESPACE}" -l app="${LABEL}"; then
-  kubectl delete route -n "${NAMESPACE}" -l app="${LABEL}"
+echo "${VALUES_FILE_CONTENT}" > "${VALUES_FILE}"
+
+HELM=$(command -v helm || command -v ./bin/helm)
+
+if [[ -z "${HELM}" ]]; then
+  curl -sLo helm.tar.gz https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz
+  tar xzf helm.tar.gz
+  mkdir -p ./bin && mv ./linux-amd64/helm ./bin/helm
+  rm -rf linux-amd64
+  rm helm.tar.gz
+
+  HELM="$(cd ./bin; pwd -P)/helm"
 fi
+
+kubectl config set-context --current --namespace "${NAMESPACE}"
+
+if [[ -n "${REPO}" ]]; then
+  repo_config="--repo ${REPO}"
+fi
+
+${HELM} template "${NAME}" "${CHART}" ${repo_config} --values "${VALUES_FILE}" | kubectl delete -f -

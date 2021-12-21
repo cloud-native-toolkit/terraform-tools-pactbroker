@@ -97,12 +97,6 @@ fi
 
 
 
-${HELM} template pactbroker-config toolkit-charts/tool-config \
-  --namespace "${NAMESPACE}" \
-  --set name=pactbroker \
-  --set url="${URL}" > "${SECRET_OUTPUT_YAML}"
-
-kubectl apply -n "${NAMESPACE}" -f "${SECRET_OUTPUT_YAML}"
 
 echo "*** Waiting for Pact Broker"
 "${SCRIPT_DIR}/waitForEndpoint.sh" "${URL}" 150 12

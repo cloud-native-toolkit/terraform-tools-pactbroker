@@ -100,3 +100,4 @@ fi
 
 echo "*** Waiting for Pact Broker"
 "${SCRIPT_DIR}/waitForEndpoint.sh" "${URL}" 150 12
+

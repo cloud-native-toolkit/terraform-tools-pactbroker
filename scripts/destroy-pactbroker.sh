@@ -51,10 +51,3 @@ ${HELM} template ${NAME} "${CHART}" \
 
 echo "*** Applying kube yaml ${OUTPUT_YAML}"
 kubectl delete -n ${NAMESPACE} -f ${OUTPUT_YAML}
-
-${HELM} template pactbroker-config toolkit-charts/tool-config \
-  --namespace "${NAMESPACE}" \
-  --set name=pactbroker \
-  --set url="${URL}" > "${SECRET_OUTPUT_YAML}"
-
-kubectl delete -n "${NAMESPACE}" -f "${SECRET_OUTPUT_YAML}"
